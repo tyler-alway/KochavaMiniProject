@@ -20,13 +20,13 @@ switch ($req){
     ]);
     
     $obj =  json_decode(file_get_contents('php://input'),true);
-    
-    foreach ($obj["data"] as $x) {
-     $redis->lpush('data', json_encode($x)); 
-     var_dump(json_decode(json_encode($x)));
-    }
-
-    //echo "Successfully connected to Redis\n";
+    $front = $obj["endpoint"];
+    $front = json_encode($front); //turns the return object into a string
+    foreach ($obj["data"] as $x) {  
+      $temp = json_encode($x);
+      $temp = "[" . $front . "," .$temp . "]";
+      $redis->lpush('data', $temp);
+    }    
 
   } catch (Exception $e) {
     echo "Couldn't connected to Redis\n";
