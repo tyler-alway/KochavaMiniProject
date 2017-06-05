@@ -38,9 +38,13 @@ func main() {
         panic(err)
       }
       for key, value := range temp.Data {
-        fmt.Println("key: " + key + " value: " + value)
+        key = "{" + key +"}"
+        re := regexp.MustCompile(key)
+        temp.Url = re.ReplaceAllString(temp.Url, value)
       }
-      fmt.Println(temp)
+      re := regexp.MustCompile("{.*}")
+      temp.Url = re.ReplaceAllString(temp.Url, "")
+      fmt.Println(temp.Method + " " + temp.Url)
     } else {
       fmt.Println("the queue is empty")
     }
