@@ -36,7 +36,7 @@ func main() {
     //if there is a postback object in the queue
     //(if the queue was empty request will be nil)
     if request != nil {
-      request, _ := redis.String(request, err)i
+      request, _ := redis.String(request, err)
       //creates a new postback object (struct) for the json string to be parsed into 
       temp := postback{}
 

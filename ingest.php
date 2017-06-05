@@ -7,7 +7,7 @@ Predis\Autoloader::register();
 //Switch statement to determine the type of request recived
 //the only type of request accepted by this program will be POST requests 
 switch ($_SERVER['REQUEST_METHOD']){
-  case 'POST':i
+  case 'POST':
   //open the connection the redis server (postback queue)
    //TODO need to add authentication 
   try{
