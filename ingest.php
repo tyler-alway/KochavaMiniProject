@@ -24,7 +24,7 @@ switch ($req){
     $front = json_encode($front); //turns the return object into a string
     foreach ($obj["data"] as $x) {  
       $temp = json_encode($x);
-      $temp = "[" . $front . "," .$temp . "]";
+      $temp = substr($front, 0, strlen($front)-1) . ",\"data\":" .$temp . "}";
       $redis->lpush('data', $temp);
     }    
 
