@@ -83,10 +83,11 @@ func main() {
 
     //else the queue is empty so try and remove another object
     } else {
-      fmt.Println("the queue is empty")
+      //The following lines prints when the queue was empty
+      //fmt.Println("the queue is empty")
     }
-    //TODO this needs to be removed it is here so that the testing values are readable (gives me time to read the testing outputs)
-    time.Sleep(1000 * time.Millisecond)
+    //The following line alows pauses inbetween queue pulls
+    //time.Sleep(1000 * time.Millisecond)
   }
   //close the log file
   defer f.Close()
