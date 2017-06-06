@@ -6,6 +6,7 @@ import (
   "time"
   "encoding/json"
   "regexp"
+  "net/url"
 //  "net/http"
 )
 
@@ -21,6 +22,14 @@ func main() {
 
   //opens a tcp connection on port 6369 to the redis-server (queue)
   client, err := redis.Dial("tcp", ":6369")
+
+  if err != nil {
+    panic(err)
+  }
+
+  //Authenticates to connect to the resis server
+  _, err = client.Do("AUTH", "anotherPassword")
+
   //if the connection to the server fails panic
   if err != nil {
     panic(err)
@@ -48,6 +57,7 @@ func main() {
 
       //loop though the data section of the postback object replace  {xxx} with Date[xxx]
       for key, value := range temp.Data {
+        value = url.QueryEscape(value)
         key = "{" + key +"}"
         re := regexp.MustCompile(key)
         temp.Url = re.ReplaceAllString(temp.Url, value)
