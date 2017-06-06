@@ -15,6 +15,7 @@ switch ($_SERVER['REQUEST_METHOD']){
         'scheme' => 'tcp',
         'host'   => '127.0.0.1',
         'port'   => 6369,
+        'password' => 'anotherPassword'
     ]);
     
     //Get the post data from the request and convert it from a string->json (array in php)
