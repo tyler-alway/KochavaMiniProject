@@ -10,6 +10,8 @@ import (
   "net/url"
   "net/http"
   "log"
+  "os"
+  "errors"
 )
 
 //struct to hold the postback object after beign parsed from json
@@ -22,10 +24,17 @@ type postback struct {
 func main() {
   fmt.Println("Delivery server started \nPress Ctrl-C to quit.")
 
+
+  //Opens file for error logging
+  f, err := os.OpenFile("log.txt", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+  log.SetOutput(f)
+
+
   //opens a tcp connection on port 6369 to the redis-server (queue)
   client, err := redis.Dial("tcp", ":6369")
-
   if err != nil {
+    //This will be logged to the log.txt file and should exit the program 
+    log.Println(err)
     panic(err)
   }
 
@@ -34,6 +43,8 @@ func main() {
 
   //if the connection to the server fails panic
   if err != nil {
+    //This will be logged to the log.txt file and should exit the program 
+    log.Println(err)
     panic(err)
   }
 
@@ -44,6 +55,9 @@ func main() {
   for {
     //pulls a postback object off the queue
     request, err := client.Do("RPOP", "data")
+    if (err != nil) {
+      log.Println(err)
+    }
 
     //if there is a postback object in the queue
     //(if the queue was empty request will be nil)
@@ -55,12 +69,17 @@ func main() {
       //parses the json string into the postback object 
       //if the object is not valid json panic
       if err := json.Unmarshal([]byte(request), &temp); err != nil {
-        //TODO log erro that continue
+        log.Println(err)
         continue
       }
 
       temp = formatUrl(temp)
-      sendRequest(temp.Url, temp.Method)
+
+      err = sendRequest(temp.Url, temp.Method)
+      //If there is an error log it
+      if(err != nil) {
+        log.Println(err)
+      }
 
     //else the queue is empty so try and remove another object
     } else {
@@ -72,9 +91,8 @@ func main() {
 }
 
 
-
 /*
-* Name: paraseJson
+* Name: formatUrl
 * Description: Function format the given postback object 
 * Parameters: Takes in a postback object 
 * Returns: The formatted data obj
@@ -96,31 +114,30 @@ func formatUrl(data postback) postback {
 }
 
 
-
 /*
 * N me: senlRequest
 * Description: Function to send get requests to the endpoint
 * Parameters: requestType and the pre formatted url to be sent
 * Returns: None
 */
-func sendRequest(url string, requestType string) {
+func sendRequest(url string, requestType string) error {
 
+  //Make sure that the request type is GET 
+  //Only GET request are supported
   if (strings.Compare("GET", requestType) != 0) {
-    panic("error only GET is supported")
+    return errors.New("error, only GET requests are supported")
   }
-
+  //Send the GET request
   response, err := http.Get(url)
 
   if err != nil {
-    log.Fatal(err)
+    return err
   } else {
     defer response.Body.Close()
     fmt.Println(response)
-    if err != nil {
-      log.Fatal(err)
-    }
   }
 
+  return nil
 }
 
 
