@@ -2,8 +2,7 @@
 
 ## Description
 ##### Kochava Miniproject :: "Postback Delivery"
-This project takes http requests into ingest.php stores the POST data sent in into a Redis server (Delivery Queue) then a go Delivery agent pulls requests out of
-the Delivery Queue formats them and sends them to the endpont location.
+This project takes http requests into ingest.php and stores the POST data sent in into a Redis server (postback Delivery Queue) then a go Delivery agent pulls requests out of the Delivery Queue, formats them, and sends them to the endpont location. Error and Delivery response data will be logged to log.txt.
 ## Setup
 Required software (must be installed):
 - NGINX
@@ -50,6 +49,9 @@ Cnage line 42 to: `_, err = client.Do("AUTH", "<Tour Redis Password>")`
 To run the Redis server: `redis-server /etc/redis/redis.conf`
 To have NGINX run the PHP ingestor (ingest.php): `cp ingest.php /var/www/html/ingest.php`
 To run the Go Delivery Agnet: `go run delivery.go`
+Or to run go in the background
+1) `go build delivery.go`
+2) `./delivery &`
 ###### Sample curls:
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://localhost:80/ingest.php?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  159.203.164.144/ingest.php`
 
