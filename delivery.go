@@ -1,7 +1,7 @@
 package main
 
 import (
-  "fmt"
+//  "fmt"
   "strings"
   "github.com/garyburd/redigo/redis"
   "time"
@@ -22,7 +22,8 @@ type postback struct {
 }
 
 func main() {
-  fmt.Println("Delivery server started \nPress Ctrl-C to quit.")
+//While running in the background there is no need for a welcome message
+//  fmt.Println("Delivery server started \nPress Ctrl-C to quit.")
 
 
   //Opens file for error logging
