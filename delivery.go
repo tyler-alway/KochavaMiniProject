@@ -2,12 +2,14 @@ package main
 
 import (
   "fmt"
+  "strings"
   "github.com/garyburd/redigo/redis"
   "time"
   "encoding/json"
   "regexp"
   "net/url"
-//  "net/http"
+  "net/http"
+  "log"
 )
 
 //struct to hold the postback object after beign parsed from json
@@ -34,6 +36,7 @@ func main() {
   if err != nil {
     panic(err)
   }
+
   //Dont allow the connection to the redis server to be closed utill the main function as finished executing
   defer client.Close()
 
@@ -52,21 +55,13 @@ func main() {
       //parses the json string into the postback object 
       //if the object is not valid json panic
       if err := json.Unmarshal([]byte(request), &temp); err != nil {
-        panic(err)
+        //TODO log erro that continue
+        continue
       }
 
-      //loop though the data section of the postback object replace  {xxx} with Date[xxx]
-      for key, value := range temp.Data {
-        value = url.QueryEscape(value)
-        key = "{" + key +"}"
-        re := regexp.MustCompile(key)
-        temp.Url = re.ReplaceAllString(temp.Url, value)
-      }
+      temp = formatUrl(temp)
+      sendRequest(temp.Url, temp.Method)
 
-      //if there are any unmatched {xxx} strings remove them from the final url
-      re := regexp.MustCompile("{.*}")
-      temp.Url = re.ReplaceAllString(temp.Url, "")
-      fmt.Println(temp.Method + " " + temp.Url)
     //else the queue is empty so try and remove another object
     } else {
       fmt.Println("the queue is empty")
@@ -75,4 +70,58 @@ func main() {
     time.Sleep(1000 * time.Millisecond)
   }
 }
+
+
+
+/*
+* Name: paraseJson
+* Description: Function format the given postback object 
+* Parameters: Takes in a postback object 
+* Returns: The formatted data obj
+*/
+func formatUrl(data postback) postback {
+  //loop though the data section of the postback object replace  {xxx} with Date[xxx]
+  for key, value := range data.Data {
+    value = url.QueryEscape(value)
+    key = "{" + key +"}"
+    re := regexp.MustCompile(key)
+    data.Url = re.ReplaceAllString(data.Url, value)
+  }
+
+  //if there are any unmatched {xxx} strings remove them from the final url
+  re := regexp.MustCompile("{.*}")
+  data.Url = re.ReplaceAllString(data.Url, "")
+
+  return data
+}
+
+
+
+/*
+* N me: senlRequest
+* Description: Function to send get requests to the endpoint
+* Parameters: requestType and the pre formatted url to be sent
+* Returns: None
+*/
+func sendRequest(url string, requestType string) {
+
+  if (strings.Compare("GET", requestType) != 0) {
+    panic("error only GET is supported")
+  }
+
+  response, err := http.Get(url)
+
+  if err != nil {
+    log.Fatal(err)
+  } else {
+    defer response.Body.Close()
+    fmt.Println(response)
+    if err != nil {
+      log.Fatal(err)
+    }
+  }
+
+}
+
+
 
