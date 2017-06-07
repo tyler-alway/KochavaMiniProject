@@ -2,6 +2,7 @@ package main
 
 import (
 //  "fmt"
+  "io/ioutil"
   "strings"
   "github.com/garyburd/redigo/redis"
   "time"
@@ -145,7 +146,8 @@ func sendRequest(url string, requestType string) error {
   } else {
     defer response.Body.Close()
     log.Println(response.StatusCode)
-    log.Println(response.Body)
+    bs, _ := ioutil.ReadAll(response.Body)
+    log.Println(string(bs))
   }
   return nil
 }
