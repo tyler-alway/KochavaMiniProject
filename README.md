@@ -16,6 +16,7 @@ Required software (must be installed):
 ##### NGINX:
 Useful resouce for installing and getting NGINX working with PHP:
 https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-in-ubuntu-16-04
+
 Move the PHP script so NGINX will run it  `cp ingest.php /var/www/html/ingest.php`
 ##### Go
 Go install instructions
