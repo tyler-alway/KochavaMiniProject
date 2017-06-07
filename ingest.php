@@ -9,7 +9,6 @@ Predis\Autoloader::register();
 switch ($_SERVER['REQUEST_METHOD']){
   case 'POST':
   //open the connection the redis server (postback queue)
-   //TODO need to add authentication 
   try{
     $redis = new Predis\Client([
         'scheme' => 'tcp',
