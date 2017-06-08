@@ -17,6 +17,13 @@ Required software (must be installed):
 Useful resource for installing and getting NGINX working with PHP:
 https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-in-ubuntu-16-04
 
+Add local environment variables to php-fpm by adding these lines:
+`env["REDISPORT"] = 6369`
+`env["REDISPASS"] = anotherPassword`
+to the end of `vim /etc/php/7.0/fpm/pool.d/www.conf`
+
+Then restart php-fpm: `service php7.0-fpm restart`
+
 Move the PHP script so NGINX will run it:  `cp ingest.php /var/www/html/ingest.php`
 ##### Go
 Go install instructions:
@@ -29,9 +36,13 @@ Installing Redis:
 https://redis.io/topics/quickstart
 You will also need to edit the redis.conf file located at `/etc/redis/redis.conf`
 You will change the lines labeled
-`port <Your Port>`
+`port <Your Redis Port>`
 and
 `requirepass <Your Redis Password>`
+
+Then run these commands:
+`export REDISPORT=<Your Redis Port>`
+`export REDISPASS=<Your Redis Password>`
 
 ##### Predis
 Nrk's PEAR channel:
@@ -41,10 +52,6 @@ http://pear.nrk.io/
 https://github.com/garyburd/redigo
 You will also need $GOPATH to be set
 
-##### ingest.php
-Change line 18 to: `'password' => <Your Redis Password>`
-##### delivery.go
-Cnage line 42 to: `_, err = client.Do("AUTH", "<Tour Redis Password>")`
 
 ## Usage
 To run the Redis server: `redis-server /etc/redis/redis.conf`
