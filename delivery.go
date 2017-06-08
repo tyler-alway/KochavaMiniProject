@@ -27,15 +27,18 @@ func main() {
 	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	log.SetOutput(f)
 
+	redisPort := os.Getenv("REDISPORT")
+	redisPass := os.Getenv("REDISPASS")
+
 	//opens a tcp connection on port 6369 to the redis-server (queue)
-	client, err := redis.Dial("tcp", ":6369")
+	client, err := redis.Dial("tcp", redisPort)
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
 
 	//Authenticates to connect to the resis server
-	_, err = client.Do("AUTH", "anotherPassword");
+	_, err = client.Do("AUTH", redisPass)
 	if err != nil {
 		log.Println(err)
 		panic(err)
@@ -44,7 +47,7 @@ func main() {
 	//for loop to continue to pull postback objects out of the queue and push them to the endpoint
 	for {
 		//pulls a postback object off the queue
-		request, err := client.Do("RPOP", "data");
+		request, err := client.Do("RPOP", "data")
 		if err != nil {
 			log.Println(err)
 		} else if request != nil {
