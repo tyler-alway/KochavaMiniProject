@@ -3,21 +3,14 @@
 require 'Predis/Autoloader.php';
 
 Predis\Autoloader::register();
-
+$database = include('config.php');
 //Switch statement to determine the type of request recived
 //the only type of request accepted by this program will be POST requests
 switch ($_SERVER['REQUEST_METHOD']){
   case 'POST':
   //open the connection the redis server (postback queue)
   try{
-    $redisPort = getenv("REDISPORT");
-    $redisPass = getenv("REDISPASS");
-    $redis = new Predis\Client([
-        'scheme' => 'tcp',
-        'host'   => '127.0.0.1',
-        'port'   => $redisPort,
-        'password' => $redisPass
-    ]);
+    $redis = new Predis\Client($database);
 
     //Get the post data from the request and convert it from a string->json (array in php)
     $obj =  json_decode(file_get_contents('php://input'),true);
