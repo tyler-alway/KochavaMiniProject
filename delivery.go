@@ -35,7 +35,8 @@ func main() {
 	}
 
 	//Authenticates to connect to the resis server
-	if _, err = client.Do("AUTH", "anotherPassword"); err != nil {
+	_, err = client.Do("AUTH", "anotherPassword");
+	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
@@ -43,13 +44,10 @@ func main() {
 	//for loop to continue to pull postback objects out of the queue and push them to the endpoint
 	for {
 		//pulls a postback object off the queue
-		request, err := client.Do("RPOP", "data")
+		request, err := client.Do("RPOP", "data");
 		if err != nil {
 			log.Println(err)
-		}
-
-		//if there is a postback object in the queue
-		if request != nil {
+		} else if request != nil {
 			request, _ := redis.String(request, err)
 			//creates a new postback object (struct) for the json string to be parsed into
 			temp := postback{}
