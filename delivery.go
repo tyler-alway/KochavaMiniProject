@@ -58,7 +58,7 @@ func main() {
 			temp := postback{}
 
 			//parses the json string into the postback object
-			if err := json.Unmarshal([]byte(request), &temp); err != nil {
+			if err := json.Unmarshal([]byte(request), &temp); err != nil && data{
 				log.Println(err)
 				continue
 			}

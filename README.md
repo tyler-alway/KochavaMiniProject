@@ -24,7 +24,12 @@ to the end of `vim /etc/php/7.0/fpm/pool.d/www.conf`
 
 Then restart php-fpm: `service php7.0-fpm restart`
 
+Go into PHP config and replace <Your Redis Port> with your redis port
+and replace <Your Redis Passowrd> with your redis password
 Move the PHP script so NGINX will run it:  `cp ingest.php /var/www/html/ingest.php`
+Move the PHP config so NGINX will run it:  `cp config.php /var/www/html/config.php`
+
+
 ##### Go
 Go install instructions:
 https://golang.org/doc/install
@@ -65,3 +70,5 @@ Or to run go in the background
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://localhost/ingest.php?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  http://localhost/ingest.php`
 
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://sample_domain_endpoint.com/data?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  http://localhost/ingest.php`
+
+`$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://localhost/ingest.php?title={mascot}&image={location}&foo={bar}"},"data":[{}]}'  http://localhost/ingest.php`
