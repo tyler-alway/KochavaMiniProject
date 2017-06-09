@@ -63,11 +63,22 @@ Or to run go in the background
 1) `go build delivery.go`
 2) `./delivery &`
 
-###### Sample curls:
-`$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://localhost/ingest.php?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  http://localhost/ingest.php`
+##### Sample curls:
 
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://sample_domain_endpoint.com/data?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  http://localhost/ingest.php`
 
+###### Expected HTTP Request:
+
+`GET http://sample_domain_endpoint.com/data?title=Gopher&image=https%3A%2F%2Fblog.golang.org%2Fgopher%2Fgopher.png&foo=`
+
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://localhost/ingest.php?title={mascot}&image={location}&foo={bar}"},"data":[{}]}'  http://localhost/ingest.php`
 
-`$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"https://httpbin.org/get?evil={$money}"},"data":[{"$money": "100 dollars"}]}'  localhost/ingest.php`
+###### Expected HTTP Request:
+
+`GET http://localhost/ingest.php?title=&image=&foo=`
+
+`$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"https://httpbin.org/get?money={$money}"},"data":[{"$money": "100 dollars"}]}'  localhost/ingest.php`
+
+###### Expected HTTP Request:
+
+`GET https://httpbin.org/get?money=100+dollars`
