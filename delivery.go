@@ -92,7 +92,7 @@ func formatUrl(data postback) postback {
 	}
 
 	//if there are any unmatched {xxx} strings remove them from the final url
-	re := regexp.MustCompile("{.*}")
+	re := regexp.MustCompile("{.*?}")
 	data.Url = re.ReplaceAllString(data.Url, "")
 
 	return data
