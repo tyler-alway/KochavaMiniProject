@@ -13,28 +13,6 @@ Required software (must be installed):
 - Redigo (Go Redis client)
 
 ### Notes:
-##### NGINX:
-Useful resource for installing and getting NGINX working with PHP:
-https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-in-ubuntu-16-04
-
-Add local environment variables to php-fpm by adding these lines:
-`env["REDISPORT"] = 6369`
-`env["REDISPASS"] = anotherPassword`
-to the end of `vim /etc/php/7.0/fpm/pool.d/www.conf`
-
-Then restart php-fpm: `service php7.0-fpm restart`
-
-Go into PHP config and replace <Your Redis Port> with your redis port
-and replace <Your Redis Passowrd> with your redis password
-Move the PHP script so NGINX will run it:  `cp ingest.php /var/www/html/ingest.php`
-Move the PHP config so NGINX will run it:  `cp config.php /var/www/html/config.php`
-
-
-##### Go
-Go install instructions:
-https://golang.org/doc/install
-You will also need to set you $GOPATH env variable:
-https://astaxie.gitbooks.io/build-web-application-with-golang/en/01.2.html
 
 ##### Redis
 Installing Redis:
@@ -45,17 +23,36 @@ You will change the lines labeled
 and
 `requirepass <Your Redis Password>`
 
-Then run these commands:
-`export REDISPORT=<Your Redis Port>`
+Then run these commands:<br/>
+`export REDISPORT=<Your Redis Port>` <br/>
 `export REDISPASS=<Your Redis Password>`
+
+
+##### NGINX:
+Useful resource for installing and getting NGINX working with PHP:
+https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-in-ubuntu-16-04
+
+Open the config.php file and replace `<Your Redis Port>` with your redis port
+and replace `<Your Redis Passowrd>` with your redis password
+
+Then move the PHP script and config to NGINX:  
+`cp ingest.php /var/www/html/ingest.php`<br/>
+`cp config.php /var/www/html/config.php`
+
+
+##### Go
+Go install instructions:
+https://golang.org/doc/install
+
+You will also need to set you $GOPATH env variable:
+https://astaxie.gitbooks.io/build-web-application-with-golang/en/01.2.html
 
 ##### Predis
 Nrk's PEAR channel:
 http://pear.nrk.io/
 
 ##### Redigo
-https://github.com/garyburd/redigo
-You will also need $GOPATH to be set
+https://github.com/garyburd/redigo (Note: You will need $GOPATH to be set)
 
 
 ## Usage
@@ -72,3 +69,5 @@ Or to run go in the background
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://sample_domain_endpoint.com/data?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  http://localhost/ingest.php`
 
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://localhost/ingest.php?title={mascot}&image={location}&foo={bar}"},"data":[{}]}'  http://localhost/ingest.php`
+
+`$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"https://httpbin.org/get?evil={$money}"},"data":[{"$money": "100 dollars"}]}'  localhost/ingest.php`
