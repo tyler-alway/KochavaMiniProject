@@ -18,7 +18,7 @@ import (
 type postback struct {
 	Method string `json:"method"`
 	Url    string `json:"url"`
-	Data   map[string]string
+	Data   map[string]string `json:"data"`
 }
 
 func main() {
@@ -56,9 +56,8 @@ func main() {
 			request, _ := redis.String(request, err)
 			//creates a new postback object (struct) for the json string to be parsed into
 			temp := postback{}
-
 			//parses the json string into the postback object
-			if err := json.Unmarshal([]byte(request), &temp); err != nil && data{
+			if err := json.Unmarshal([]byte(request), &temp); err != nil {
 				log.Println(err)
 				continue
 			}
@@ -124,3 +123,4 @@ func sendRequest(url string, requestType string) error {
 	}
 	return nil
 }
+
