@@ -86,7 +86,7 @@ func formatUrl(data postback) postback {
 		value = url.QueryEscape(value)
 		key = "{" + key + "}"
 
-		key = sanitizeKey(key)
+		key = regexp.QuoteMeta(key)
 		re := regexp.MustCompile(key)
 		data.Url = re.ReplaceAllString(data.Url, value)
 	}
@@ -124,44 +124,4 @@ func sendRequest(url string, requestType string) error {
 		log.Println(string(bs))
 	}
 	return nil
-}
-
-//Name: sanitizeKey
-//Description: Function to sanitize the key from the client
-//Parameters: Takes in a key string
-//Returns: Returns the sanitized key
-func sanitizeKey(key string) string {
-
-	re := regexp.MustCompile("\\^")
-	key = re.ReplaceAllString(key, "\\^")
-
-	re = regexp.MustCompile("\\.")
-	key = re.ReplaceAllString(key, "\\.")
-
-	re = regexp.MustCompile("\\[")
-	key = re.ReplaceAllString(key, "\\[")
-
-	re = regexp.MustCompile("\\]")
-	key = re.ReplaceAllString(key, "\\]")
-
-	re = regexp.MustCompile("\\$")
-	key = re.ReplaceAllString(key, "\\$")
-
-	re = regexp.MustCompile("\\*")
-	key = re.ReplaceAllString(key, "\\*")
-
-	re = regexp.MustCompile("\\{")
-	key = re.ReplaceAllString(key, "\\{")
-
-	re = regexp.MustCompile("\\}")
-	key = re.ReplaceAllString(key, "\\}")
-
-	re = regexp.MustCompile("\\(")
-	key = re.ReplaceAllString(key, "\\(")
-
-	re = regexp.MustCompile("\\)")
-	key = re.ReplaceAllString(key, "\\)")
-
-	return key
-
 }
