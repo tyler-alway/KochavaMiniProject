@@ -85,8 +85,12 @@ func formatUrl(data postback) postback {
 	for key, value := range data.Data {
 		value = url.QueryEscape(value)
 		key = "{" + key + "}"
+
+		rc := regexp.MustCompile("\\$")
+		key = rc.ReplaceAllString(key, "\\$")
 		re := regexp.MustCompile(key)
 		data.Url = re.ReplaceAllString(data.Url, value)
+		log.Println(data.Url)
 	}
 
 	//if there are any unmatched {xxx} strings remove them from the final url
@@ -123,4 +127,3 @@ func sendRequest(url string, requestType string) error {
 	}
 	return nil
 }
-
