@@ -16,8 +16,8 @@ import (
 
 //struct to hold the postback object after beign parsed from json
 type postback struct {
-	Method string `json:"method"`
-	Url    string `json:"url"`
+	Method string            `json:"method"`
+	Url    string            `json:"url"`
 	Data   map[string]string `json:"data"`
 }
 
@@ -86,11 +86,9 @@ func formatUrl(data postback) postback {
 		value = url.QueryEscape(value)
 		key = "{" + key + "}"
 
-		rc := regexp.MustCompile("\\$")
-		key = rc.ReplaceAllString(key, "\\$")
+		key = sanitizeKey(key)
 		re := regexp.MustCompile(key)
 		data.Url = re.ReplaceAllString(data.Url, value)
-		log.Println(data.Url)
 	}
 
 	//if there are any unmatched {xxx} strings remove them from the final url
@@ -126,4 +124,44 @@ func sendRequest(url string, requestType string) error {
 		log.Println(string(bs))
 	}
 	return nil
+}
+
+//Name: sanitizeKey
+//Description: Function to sanitize the key from the client
+//Parameters: Takes in a key string
+//Returns: Returns the sanitized key
+func sanitizeKey(key string) string {
+
+	re := regexp.MustCompile("\\^")
+	key = re.ReplaceAllString(key, "\\^")
+
+	re = regexp.MustCompile("\\.")
+	key = re.ReplaceAllString(key, "\\.")
+
+	re = regexp.MustCompile("\\[")
+	key = re.ReplaceAllString(key, "\\[")
+
+	re = regexp.MustCompile("\\]")
+	key = re.ReplaceAllString(key, "\\]")
+
+	re = regexp.MustCompile("\\$")
+	key = re.ReplaceAllString(key, "\\$")
+
+	re = regexp.MustCompile("\\*")
+	key = re.ReplaceAllString(key, "\\*")
+
+	re = regexp.MustCompile("\\{")
+	key = re.ReplaceAllString(key, "\\{")
+
+	re = regexp.MustCompile("\\}")
+	key = re.ReplaceAllString(key, "\\}")
+
+	re = regexp.MustCompile("\\(")
+	key = re.ReplaceAllString(key, "\\(")
+
+	re = regexp.MustCompile("\\)")
+	key = re.ReplaceAllString(key, "\\)")
+
+	return key
+
 }
