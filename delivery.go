@@ -84,10 +84,8 @@ func formatUrl(data postback) postback {
 	//loop though the data section of the postback object replace  {xxx} with Date[xxx]
 	for key, value := range data.Data {
 		value = url.QueryEscape(value)
-		key = "{" + key + "}"
-
-		key = regexp.QuoteMeta(key)
-		re := regexp.MustCompile(key)
+		
+		re := regexp.MustCompile(regexp.QuoteMeta("{" + key + "}"))
 		data.Url = re.ReplaceAllString(data.Url, value)
 	}
 
