@@ -77,8 +77,8 @@ Or to run go in the background
 
 `GET http://localhost/ingest.php?title=&image=&foo=`
 
-`$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"https://httpbin.org/get?money={$money}"},"data":[{"$money": "100 dollars"}]}'  localhost/ingest.php`
+`$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"https://httpbin.org/get?evil={$money}"},"data":[{"$money": "100 dollars"}]}'  localhost/ingest.php`
 
 ###### Expected HTTP Request:
 
-`GET https://httpbin.org/get?money=100+dollars`
+`GET https://httpbin.org/get?evil=100+dollars`
