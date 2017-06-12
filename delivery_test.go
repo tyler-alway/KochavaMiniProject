@@ -11,9 +11,9 @@ type fmturltestpair struct {
 }
 
 type httptestpair struct {
-  url string
-  requestType string
-  result responseData
+	url         string
+	requestType string
+	result      responseData
 }
 
 var urlTests = []fmturltestpair{
@@ -29,9 +29,8 @@ var urlTests = []fmturltestpair{
 	{data: postback{Method: "GET", Url: "{$money*}{other?}", Data: map[string]string{"$money*": "100 dollars", "other?": "something else"}}, result: "100+dollarssomething+else"},
 }
 
-var httpSendTests = []httptestpair {
-  {url: "https://httpbin.org/get?evil=100+dollars", requestType: "GET", result: responseData{responseCode: "200", responseTime: "???", responseBody: "???"}},
-
+var httpSendTests = []httptestpair{
+	{url: "https://httpbin.org/get?evil=100+dollars", requestType: "GET", result: responseData{responseCode: "200", responseTime: "???", responseBody: "???"}},
 }
 
 func TestFormatUrl(t *testing.T) {
