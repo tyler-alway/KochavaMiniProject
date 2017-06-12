@@ -44,7 +44,6 @@ func TestSendRequest(t *testing.T) {
 
 	resp, _ := sendRequest(testURl, "GET")
 
-	assert.Equal(t, "200", resp.responseCode)
-	assert.Equal(t, "body string\n", resp.responseBody)
-
+	assert.Equal(t, "200", resp.responseCode, "sendRequest() didn't return the expected status code.")
+	assert.Equal(t, "body string\n", resp.responseBody, "sendRequest() didn't return the expected response body.")
 }
