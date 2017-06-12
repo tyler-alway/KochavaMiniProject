@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"strconv"
+	"bytes"
 )
 
 //struct to hold the postback object after beign parsed from json
@@ -64,9 +66,11 @@ func main() {
 
 			temp = formatUrl(temp)
 
-			err = sendRequest(temp.Url, temp.Method)
+			response, err := sendRequest(temp.Url, temp.Method)
 			if err != nil {
 				log.Println(err)
+			} else {
+				log.Println(response)
 			}
 		}
 	}
@@ -99,27 +103,32 @@ func formatUrl(data postback) postback {
 //Name: sendRequest
 //Description: Function to send get requests to the endpoint
 //Parameters: requestType and the pre formatted url to be sent
-//Returns: None
-func sendRequest(url string, requestType string) error {
+//Returns: response string, err
+func sendRequest(url string, requestType string) (string, error) {
+
+	httpResponseData := ""
 
 	if strings.Compare("GET", requestType) != 0 {
-		return errors.New("error, only GET requests are supported")
+		return httpResponseData, errors.New("error, only GET requests are supported")
 	}
 
 	t1 := time.Now()
 	response, err := http.Get(url)
 	t2 := time.Now()
 
-	d := t2.Sub(t1)
-	log.Println(d)
+	duration := t2.Sub(t1)
+	httpResponseData += duration.String() + "\n"
 
 	if err != nil {
-		return err
+		return httpResponseData, err
 	} else {
 		defer response.Body.Close()
-		log.Println(response.StatusCode)
-		bs, _ := ioutil.ReadAll(response.Body)
-		log.Println(string(bs))
+		httpResponseData += strconv.Itoa(response.StatusCode) + "\n"
+
+		body, _ := ioutil.ReadAll(response.Body)
+		//n := bytes.Index(body, []byte{0})
+		httpResponseData += string(body[:])
+
+		return httpResponseData, nil
 	}
-	return nil
 }

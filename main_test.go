@@ -76,3 +76,14 @@ func TestFormatUrl(t *testing.T) {
 	}
 
 }
+
+func TestSendRequest(t *testing.T) {
+	url := "https://sample_domain_endpoint.com"
+  method := "GET"
+
+	_, err := sendRequest(url, method)
+	if err == nil {
+		t.Errorf("Http request should have failed due to invalid url.")
+	}
+
+}
