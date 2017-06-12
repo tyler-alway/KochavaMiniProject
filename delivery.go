@@ -10,10 +10,9 @@ import (
 	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
-	"bytes"
 )
 
 //struct to hold the postback object after beign parsed from json
@@ -21,6 +20,13 @@ type postback struct {
 	Method string            `json:"method"`
 	Url    string            `json:"url"`
 	Data   map[string]string `json:"data"`
+}
+
+//struct to hold the response data object after sending a http request
+type responseData struct {
+	responseCode string
+	responseTime string
+	responseBody string
 }
 
 func main() {
@@ -70,7 +76,9 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			} else {
-				log.Println(response)
+				log.Println(response.responseCode)
+				log.Println(response.responseTime)
+				log.Println(response.responseBody)
 			}
 		}
 	}
@@ -103,10 +111,10 @@ func formatUrl(data postback) postback {
 //Name: sendRequest
 //Description: Function to send get requests to the endpoint
 //Parameters: requestType and the pre formatted url to be sent
-//Returns: response string, err
-func sendRequest(url string, requestType string) (string, error) {
+//Returns: responseData string, err
+func sendRequest(url string, requestType string) (responseData, error) {
 
-	httpResponseData := ""
+	var httpResponseData responseData
 
 	if strings.Compare("GET", requestType) != 0 {
 		return httpResponseData, errors.New("error, only GET requests are supported")
@@ -117,17 +125,16 @@ func sendRequest(url string, requestType string) (string, error) {
 	t2 := time.Now()
 
 	duration := t2.Sub(t1)
-	httpResponseData += duration.String() + "\n"
+	httpResponseData.responseTime = duration.String()
 
 	if err != nil {
 		return httpResponseData, err
 	} else {
 		defer response.Body.Close()
-		httpResponseData += strconv.Itoa(response.StatusCode) + "\n"
+		httpResponseData.responseCode = strconv.Itoa(response.StatusCode)
 
 		body, _ := ioutil.ReadAll(response.Body)
-		//n := bytes.Index(body, []byte{0})
-		httpResponseData += string(body[:])
+		httpResponseData.responseBody = string(body[:])
 
 		return httpResponseData, nil
 	}
