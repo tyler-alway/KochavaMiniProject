@@ -144,6 +144,6 @@ func TestProcessEmptyRequest(t *testing.T) {
 	client.On("Do", "RPOP", []interface{}{"data"}).Return(nil, nil)
 	obj, _ := process(client)
 
-	assert.Nil(t, nil, obj, "obj is supposed to be null")
+	assert.Nil(t, obj, "obj is supposed to be null")
 
 }
