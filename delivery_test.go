@@ -47,6 +47,10 @@ func TestFormatUrl(t *testing.T) {
 		r := formatUrl(pair.data)
 		assert.Equal(t, pair.result, r.Url, "formatUrl() didn't return the expected formatted url.")
 	}
+}
+
+func TestFormatUrlRegex(t *testing.T) {
+
 	for _, pair := range TestFormatUrlRegexKeys {
 		r := formatUrl(pair.data)
 		assert.Equal(t, pair.result, r.Url, "formatUrl() didn't return the expected formatted url.")
