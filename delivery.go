@@ -56,36 +56,53 @@ func main() {
 
 	//for loop to continue to pull postback objects out of the queue and push them to the endpoint
 	for {
-		//pulls a postback object off the queue
-		request, err := client.Do("RPOP", "data")
+		response, err := process(client)
 		if err != nil {
 			log.Println(err)
-		} else if request != nil {
-			request, _ := redis.String(request, err)
-			//creates a new postback object (struct) for the json string to be parsed into
-			temp := postback{}
-			//parses the json string into the postback object
-			if err := json.Unmarshal([]byte(request), &temp); err != nil {
-				log.Println(err)
-				continue
-			}
-
-			temp = formatUrl(temp)
-
-			response, err := sendRequest(temp.Url, temp.Method)
-			if err != nil {
-				log.Println(err)
-			} else {
-				log.Println(response.responseCode)
-				log.Println(response.responseTime)
-				log.Println(response.responseBody)
-			}
+		} else if response != nil {
+			log.Println(response.responseCode)
+			log.Println(response.responseTime)
+			log.Println(response.responseBody)
 		}
 	}
 
 	defer client.Close()
 	defer f.Close()
 
+}
+
+
+//Name: process(client Conn)
+//Description: This function fetches a postback obj from redis and makes the request
+//Parameters: Takes in a redis connection
+//Returns: responseData obj, error
+func process(client redis.Conn) (*responseData, error) {
+	//pulls a postback object off the queue
+	request, err := client.Do("RPOP", "data")
+	if err != nil {
+		return nil, err
+	} else if request == nil {
+		return nil, nil
+	}
+
+	data, _ := redis.String(request, err)
+	if (err != nil) {
+		return nil, err
+	}
+	//creates a new postback object (struct) for the json string to be parsed into
+	temp := postback{}
+	//parses the json string into the postback object
+	if err := json.Unmarshal([]byte(data), &temp); err != nil {
+		return nil, err
+	}
+
+	temp = formatUrl(temp)
+
+	response, err := sendRequest(temp.Url, temp.Method)
+	if err != nil {
+		return nil, err
+	}
+	return response, err
 }
 
 //Name: formatUrl
@@ -111,13 +128,13 @@ func formatUrl(data postback) postback {
 //Name: sendRequest
 //Description: Function to send get requests to the endpoint
 //Parameters: requestType and the pre formatted url to be sent
-//Returns: responseData string, err
-func sendRequest(url string, requestType string) (responseData, error) {
+//Returns: responseData obj, error
+func sendRequest(url string, requestType string) (*responseData, error) {
 
 	var httpResponseData responseData
 
 	if strings.Compare("GET", requestType) != 0 {
-		return httpResponseData, errors.New("error, only GET requests are supported")
+		return nil, errors.New("error, only GET requests are supported")
 	}
 
 	t1 := time.Now()
@@ -128,7 +145,7 @@ func sendRequest(url string, requestType string) (responseData, error) {
 	httpResponseData.responseTime = duration.String()
 
 	if err != nil {
-		return httpResponseData, err
+		return nil, err
 	} else {
 		defer response.Body.Close()
 		httpResponseData.responseCode = strconv.Itoa(response.StatusCode)
@@ -136,6 +153,6 @@ func sendRequest(url string, requestType string) (responseData, error) {
 		body, _ := ioutil.ReadAll(response.Body)
 		httpResponseData.responseBody = string(body[:])
 
-		return httpResponseData, nil
+		return &httpResponseData, nil
 	}
 }
