@@ -4,14 +4,62 @@ import (
 	"errors"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	//"strings"
 )
 
 type fmturltestpair struct {
 	data   postback
 	result string
+}
+
+//redigo mock interface
+type redisMock struct {
+	mock.Mock
+}
+
+func (o redisMock) Do(cmd string, a ...interface{}) (interface{}, error) {
+
+	args := o.Called(cmd, a)
+
+	if args[0] == nil {
+		return nil, nil
+	}
+
+	return args.Get(0).(interface{}), args.Error(1)
+}
+
+func (o redisMock) Close() error {
+
+	args := o.Called()
+	return args.Error(0)
+}
+
+func (o redisMock) Err() error {
+
+	args := o.Called()
+	return args.Error(0)
+}
+
+func (o redisMock) Flush() error {
+
+	args := o.Called()
+	return args.Error(0)
+}
+
+func (o redisMock) Receive() (interface{}, error) {
+
+	args := o.Called()
+	return args.Get(0).([]uint8), args.Error(1)
+}
+
+func (o redisMock) Send(a string, i ...interface{}) error {
+
+	args := o.Called(a, i)
+	return args.Error(0)
 }
 
 var urlTests = []fmturltestpair{
@@ -75,5 +123,27 @@ func TestSendRequest(t *testing.T) {
 	resp, err = sendRequest(testURl, "POST")
 	assert.NotEqual(t, nil, err, "err shoudln't be nil")
 	assert.Equal(t, errors.New("error, only GET requests are supported"), err)
+
+}
+
+func TestProcess(t *testing.T) {
+	client := new(redisMock)
+	client.On("Do", "RPOP", []interface{}{"data"}).Return([]uint8("{\"method\":\"GET\",\"url\":\"https:\\/\\/httpbin.org\\/get?evil={$money}\",\"data\":{\"$money\":\"100 dollars\"}}"), nil)
+	obj, _ := process(client)
+
+	url := "https://httpbin.org/get?evil={$money}"
+	data := "100 dollars"
+
+	assert.Equal(t, "GET", obj.Method, "Incorrect Http method")
+	assert.Equal(t, url, obj.Url, "Url does not match")
+	assert.Equal(t, data, obj.Data["$money"], "Given data does not match")
+}
+
+func TestProcessEmptyRequest(t *testing.T) {
+	client := new(redisMock)
+	client.On("Do", "RPOP", []interface{}{"data"}).Return(nil, nil)
+	obj, _ := process(client)
+
+	assert.Nil(t, nil, obj, "obj is supposed to be null")
 
 }

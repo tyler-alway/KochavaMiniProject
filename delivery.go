@@ -56,13 +56,20 @@ func main() {
 
 	//for loop to continue to pull postback objects out of the queue and push them to the endpoint
 	for {
-		response, err := process(client)
+
+		redisObj, err := process(client)
 		if err != nil {
 			log.Println(err)
-		} else if response != nil {
-			log.Println(response.responseCode)
-			log.Println(response.responseTime)
-			log.Println(response.responseBody)
+		} else if redisObj != nil {
+			obj := formatUrl(*redisObj)
+			response, err := sendRequest(obj.Url, obj.Method)
+			if err != nil {
+				log.Println(err)
+			} else if response != nil {
+				log.Println(response.responseCode)
+				log.Println(response.responseTime)
+				log.Println(response.responseBody)
+			}
 		}
 	}
 
@@ -71,12 +78,11 @@ func main() {
 
 }
 
-
 //Name: process(client Conn)
-//Description: This function fetches a postback obj from redis and makes the request
+//Description: This function fetches a postback obj from redis
 //Parameters: Takes in a redis connection
 //Returns: responseData obj, error
-func process(client redis.Conn) (*responseData, error) {
+func process(client redis.Conn) (*postback, error) {
 	//pulls a postback object off the queue
 	request, err := client.Do("RPOP", "data")
 	if err != nil {
@@ -86,23 +92,17 @@ func process(client redis.Conn) (*responseData, error) {
 	}
 
 	data, _ := redis.String(request, err)
-	if (err != nil) {
-		return nil, err
-	}
-	//creates a new postback object (struct) for the json string to be parsed into
-	temp := postback{}
-	//parses the json string into the postback object
-	if err := json.Unmarshal([]byte(data), &temp); err != nil {
-		return nil, err
-	}
-
-	temp = formatUrl(temp)
-
-	response, err := sendRequest(temp.Url, temp.Method)
 	if err != nil {
 		return nil, err
 	}
-	return response, err
+
+	obj := postback{}
+	//parses the json string into the postback object
+	if err := json.Unmarshal([]byte(data), &obj); err != nil {
+		return nil, err
+	}
+
+	return &obj, nil
 }
 
 //Name: formatUrl
