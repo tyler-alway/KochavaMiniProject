@@ -55,6 +55,13 @@ http://pear.nrk.io/
 https://github.com/garyburd/redigo (Note: You will need $GOPATH to be set)
 
 
+## Tests
+For running test you will need get the Testify package from https://github.com/stretchr/testify
+Or to install the newest version run `go get github.com/stretchr/testify`
+
+To run tests: `go test`
+
+
 ## Usage
 To run the Redis server: `redis-server /etc/redis/redis.conf`
 To have NGINX run the PHP ingest agent (ingest.php): `cp ingest.php /var/www/html/ingest.php`
