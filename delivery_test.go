@@ -15,20 +15,21 @@ type fmturltestpair struct {
 }
 
 var urlTests = []fmturltestpair{
-
-	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil="}, result: "https://httpbin.org/get?evil="},                                                                                                                                                  //url + no key + no data
-	{data: postback{Method: "GET", Url: "", Data: map[string]string{"$money": "100 dollars"}}, result: ""},                                                                                                                                                          //url + key + data
-	{data: postback{Method: "GET", Url: ""}, result: ""},                                                                                                                                                                                                            //no url + no key + no data
-	{data: postback{Method: "GET", Url: "", Data: map[string]string{"money": "100 dollars"}}, result: ""},                                                                                                                                                           //no url + no key + data
-	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}"}, result: "https://httpbin.org/get?evil="},                                                                                                                                           //url + key + no data
-	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}", Data: map[string]string{"money": "100 dollars"}}, result: "https://httpbin.org/get?evil=100+dollars"},                                                                               //url + key + data
+	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}", Data: map[string]string{"money": "100 dollars"}}, result: "https://httpbin.org/get?evil=100+dollars"}, //url + key + data
+	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}"}, result: "https://httpbin.org/get?evil="},                                                             //url + key + no data
+	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil="}, result: "https://httpbin.org/get?evil="},                                                                    //url + no key + no data
+	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil=", Data: map[string]string{"money": "100 dollars"}}, result: "https://httpbin.org/get?evil="},                   //url + no key + data
+	{data: postback{Method: "GET", Url: "{money}", Data: map[string]string{"money": "100 dollars"}}, result: "100+dollars"},                                                           //no url + key + data
+	{data: postback{Method: "GET", Url: ""}, result: ""},                                                                                                                              //no url + no key + no data
+	{data: postback{Method: "GET", Url: "", Data: map[string]string{"money": "100 dollars"}}, result: ""},                                                                             //no url + no key + data
+	{data: postback{Method: "GET", Url: "{money}"}, result: ""},                                                                                                                       //no url + key + no data
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}&other={other}", Data: map[string]string{"money": "100 dollars", "other": "something else"}}, result: "https://httpbin.org/get?evil=100+dollars&other=something+else"},                 //url + mult key + mult data
+	{data: postback{Method: "GET", Url: "{money}&other={other}", Data: map[string]string{"money": "100 dollars", "other": "something else"}}, result: "100+dollars&other=something+else"},                                                                           //no url + mult key + mult data
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}&other={other}"}, result: "https://httpbin.org/get?evil=&other="},                                                                                                                      //url + mult key + no data
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}&other={other}", Data: map[string]string{"other": "something else"}}, result: "https://httpbin.org/get?evil=&other=something+else"},                                                    //url + mult key + incomplete data at end
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}&other={other}", Data: map[string]string{"money": "100 dollars"}}, result: "https://httpbin.org/get?evil=100+dollars&other="},                                                          //url + mult key + incomplete data at beg
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}", Data: map[string]string{"other": "something else"}}, result: "https://httpbin.org/get?evil="},                                                                                       //url + key + different data
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={other}", Data: map[string]string{"other": "! @ # $ % ^ & * ( ) + ? > < , ; :"}}, result: "https://httpbin.org/get?evil=%21+%40+%23+%24+%25+%5E+%26+%2A+%28+%29+%2B+%3F+%3E+%3C+%2C+%3B+%3A"}, //check urlencoding
-
 }
 
 var TestFormatUrlRegexKeys = []fmturltestpair{
@@ -55,7 +56,7 @@ func TestFormatUrl(t *testing.T) {
 func TestSendRequest(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprintln(w, "body string")
+		fmt.Fprintln(w, "some string")
 	}))
 	defer testServer.Close()
 
@@ -65,7 +66,7 @@ func TestSendRequest(t *testing.T) {
 
 	assert.Equal(t, nil, err, "err should be nil")
 	assert.Equal(t, "200", resp.responseCode, "sendRequest() didn't return the expected status code.")
-	assert.Equal(t, "body string\n", resp.responseBody, "sendRequest() didn't return the expected response body.")
+	assert.Equal(t, "some string\n", resp.responseBody, "sendRequest() didn't return the expected response body.")
 
 	resp, err = sendRequest(testURl, "POST")
 	assert.NotEqual(t, nil, err, "err shoudln't be nil")
