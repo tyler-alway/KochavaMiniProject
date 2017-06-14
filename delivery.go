@@ -84,24 +84,16 @@ func main() {
 //Returns: responseData obj, error
 func process(client redis.Conn) (*postback, error) {
 	//pulls a postback object off the queue
-	request, err := client.Do("RPOP", "data")
+	str, err := redis.String(client.Do("RPOP", "data"))
 	if err != nil {
 		return nil, err
-	} else if request == nil {
-		return nil, nil
-	}
-
-	data, _ := redis.String(request, err)
-	if err != nil {
-		return nil, err
-	}
+	} 
 
 	obj := postback{}
 	//parses the json string into the postback object
-	if err := json.Unmarshal([]byte(data), &obj); err != nil {
+	if err := json.Unmarshal([]byte(str), &obj); err != nil {
 		return nil, err
 	}
-
 	return &obj, nil
 }
 
@@ -110,7 +102,7 @@ func process(client redis.Conn) (*postback, error) {
 //Parameters: Takes in a postback object
 //Returns: The formatted data obj
 func formatUrl(data postback) postback {
-	//loop though the data section of the postback object replace  {xxx} with Date[xxx]
+	//loop though the data section of the postback object replace {xxx} with Date[xxx]
 	for key, value := range data.Data {
 		value = url.QueryEscape(value)
 

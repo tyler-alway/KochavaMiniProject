@@ -148,3 +148,13 @@ func TestProcessEmptyRequest(t *testing.T) {
 	assert.Nil(t, obj, "obj is supposed to be nil")
 
 }
+
+func TestProcessNonJsonResponse(t *testing.T) {
+	client := new(redisMock)
+	client.On("Do", "RPOP", []interface{}{"data"}).Return("This string is not a valid Json obj", nil)
+	obj, err := process(client)
+
+	assert.Nil(t, obj, "Non valid JSON obj should be nil")
+	assert.NotNil(t, err, "Non valid JSON should return an error")
+
+}
