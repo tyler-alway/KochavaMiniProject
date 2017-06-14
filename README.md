@@ -56,8 +56,8 @@ https://github.com/garyburd/redigo (Note: You will need $GOPATH to be set)
 
 
 ## Tests
-For running test you will need get the Testify package from https://github.com/stretchr/testify
-Or to install the newest version run `go get github.com/stretchr/testify`
+For running test you will need get the Testify package from https://github.com/stretchr/testify <br/>
+To install the newest version run `go get github.com/stretchr/testify`
 
 To run tests: `go test`
 
