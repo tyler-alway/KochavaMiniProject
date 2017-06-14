@@ -137,6 +137,7 @@ func TestProcess(t *testing.T) {
 	assert.Equal(t, "GET", obj.Method, "Incorrect Http method")
 	assert.Equal(t, url, obj.Url, "Url does not match")
 	assert.Equal(t, data, obj.Data["$money"], "Given data does not match")
+	assert.Equal(t, 1, len(obj.Data), "There should only be one data key")
 }
 
 func TestProcessEmptyRequest(t *testing.T) {
@@ -144,6 +145,6 @@ func TestProcessEmptyRequest(t *testing.T) {
 	client.On("Do", "RPOP", []interface{}{"data"}).Return(nil, nil)
 	obj, _ := process(client)
 
-	assert.Nil(t, obj, "obj is supposed to be null")
+	assert.Nil(t, obj, "obj is supposed to be nil")
 
 }
