@@ -32,36 +32,6 @@ func (o redisMock) Do(cmd string, a ...interface{}) (interface{}, error) {
 	return args.Get(0).(interface{}), args.Error(1)
 }
 
-func (o redisMock) Close() error {
-
-	args := o.Called()
-	return args.Error(0)
-}
-
-func (o redisMock) Err() error {
-
-	args := o.Called()
-	return args.Error(0)
-}
-
-func (o redisMock) Flush() error {
-
-	args := o.Called()
-	return args.Error(0)
-}
-
-func (o redisMock) Receive() (interface{}, error) {
-
-	args := o.Called()
-	return args.Get(0).([]uint8), args.Error(1)
-}
-
-func (o redisMock) Send(a string, i ...interface{}) error {
-
-	args := o.Called(a, i)
-	return args.Error(0)
-}
-
 var urlTests = []fmturltestpair{
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}", Data: map[string]string{"money": "100 dollars"}}, result: "https://httpbin.org/get?evil=100+dollars"}, //url + key + data
 	{data: postback{Method: "GET", Url: "https://httpbin.org/get?evil={money}"}, result: "https://httpbin.org/get?evil="},                                                             //url + key + no data

@@ -29,6 +29,10 @@ type responseData struct {
 	responseBody string
 }
 
+type RedisDoer interface {
+	Do(commandName string, args ...interface{}) (reply interface{}, err error)
+}
+
 func main() {
 
 	//Opens file for error logging
@@ -76,11 +80,10 @@ func main() {
 	}
 }
 
-//Name: fetchPostbackObj(client Conn)
-//Description: This function fetches a postback obj from redis
-//Parameters: Takes in a redis connection
-//Returns: responseData obj, error
-func fetchPostbackObj(client redis.Conn) (*postback, error) {
+//fetchPostbackObj fetches a postback obj from the redis delivery queue.
+//Takes in a RedisDoer interface
+//It returns the postback object from the queue
+func fetchPostbackObj(client RedisDoer) (*postback, error) {
 	//pulls a postback object off the queue
 	str, err := redis.String(client.Do("RPOP", "data"))
 	if err != nil {
@@ -95,10 +98,9 @@ func fetchPostbackObj(client redis.Conn) (*postback, error) {
 	return &obj, nil
 }
 
-//Name: formatUrl
-//Description: Function format the given postback object
-//Parameters: Takes in a postback object
-//Returns: The formatted data obj
+//formatUrl formats the given postback object.
+//Takes in a postback object replaces the keys in the url string with the given data.
+//It returns The formatted data obj
 func formatUrl(data postback) postback {
 	//loop though the data section of the postback object replace {xxx} with Date[xxx]
 	for key, value := range data.Data {
@@ -115,10 +117,9 @@ func formatUrl(data postback) postback {
 	return data
 }
 
-//Name: sendRequest
-//Description: Function to send get requests to the endpoint
-//Parameters: requestType and the pre formatted url to be sent
-//Returns: responseData obj, error
+//sendRequest sends GET requests to the given endpoint.
+//Takes in a requestType String and a url string sends the request
+//It returns the http response stored in a responseData obj or an error
 func sendRequest(url string, requestType string) (*responseData, error) {
 
 	var httpResponseData responseData
