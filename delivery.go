@@ -86,8 +86,8 @@ func process(client redis.Conn) (*postback, error) {
 	//pulls a postback object off the queue
 	str, err := redis.String(client.Do("RPOP", "data"))
 	if err != nil {
-		return nil, err
-	} 
+		return nil, nil
+	}
 
 	obj := postback{}
 	//parses the json string into the postback object
