@@ -33,6 +33,7 @@ func main() {
 
 	//Opens file for error logging
 	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer f.Close()
 	log.SetOutput(f)
 
 	redisPort := os.Getenv("REDISPORT")
@@ -46,6 +47,7 @@ func main() {
 		log.Println(err)
 		panic(err)
 	}
+	defer client.Close()
 
 	//Authenticates to connect to the resis server
 	_, err = client.Do("AUTH", redisPass)
@@ -57,7 +59,7 @@ func main() {
 	//for loop to continue to pull postback objects out of the queue and push them to the endpoint
 	for {
 
-		redisObj, err := process(client)
+		redisObj, err := fetchPostbackObj(client)
 		if err != nil {
 			log.Println(err)
 		} else if redisObj != nil {
@@ -72,17 +74,13 @@ func main() {
 			}
 		}
 	}
-
-	defer client.Close()
-	defer f.Close()
-
 }
 
-//Name: process(client Conn)
+//Name: fetchPostbackObj(client Conn)
 //Description: This function fetches a postback obj from redis
 //Parameters: Takes in a redis connection
 //Returns: responseData obj, error
-func process(client redis.Conn) (*postback, error) {
+func fetchPostbackObj(client redis.Conn) (*postback, error) {
 	//pulls a postback object off the queue
 	str, err := redis.String(client.Do("RPOP", "data"))
 	if err != nil {

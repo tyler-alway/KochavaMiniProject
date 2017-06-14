@@ -123,13 +123,12 @@ func TestSendRequest(t *testing.T) {
 	resp, err = sendRequest(testURl, "POST")
 	assert.NotEqual(t, nil, err, "err shoudln't be nil")
 	assert.Equal(t, errors.New("error, only GET requests are supported"), err)
-
 }
 
-func TestProcess(t *testing.T) {
+func TestFetchPostbackObj(t *testing.T) {
 	client := new(redisMock)
 	client.On("Do", "RPOP", []interface{}{"data"}).Return([]uint8("{\"method\":\"GET\",\"url\":\"https:\\/\\/httpbin.org\\/get?evil={$money}\",\"data\":{\"$money\":\"100 dollars\"}}"), nil)
-	obj, _ := process(client)
+	obj, _ := fetchPostbackObj(client)
 
 	url := "https://httpbin.org/get?evil={$money}"
 	data := "100 dollars"
@@ -140,21 +139,28 @@ func TestProcess(t *testing.T) {
 	assert.Equal(t, 1, len(obj.Data), "There should only be one data key")
 }
 
-func TestProcessEmptyRequest(t *testing.T) {
+func TestFetchPostbackObjEmptyRequest(t *testing.T) {
 	client := new(redisMock)
 	client.On("Do", "RPOP", []interface{}{"data"}).Return(nil, nil)
-	obj, _ := process(client)
+	obj, _ := fetchPostbackObj(client)
 
 	assert.Nil(t, obj, "obj is supposed to be nil")
-
 }
 
-func TestProcessNonJsonResponse(t *testing.T) {
+func TestFetchPostbackObjNonJsonResponse(t *testing.T) {
 	client := new(redisMock)
 	client.On("Do", "RPOP", []interface{}{"data"}).Return("This string is not a valid Json obj", nil)
-	obj, err := process(client)
+	obj, err := fetchPostbackObj(client)
 
 	assert.Nil(t, obj, "Non valid JSON obj should be nil")
 	assert.NotNil(t, err, "Non valid JSON should return an error")
+}
 
+func TestFetchPostbackObjRedisError(t *testing.T) {
+	client := new(redisMock)
+	client.On("Do", "RPOP", []interface{}{"data"}).Return(nil, errors.New("Something wrong with connection"))
+	obj, err := fetchPostbackObj(client)
+
+	assert.Nil(t, err, "err should be nil")
+	assert.Nil(t, obj, "obj should be nil")
 }
