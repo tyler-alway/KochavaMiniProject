@@ -42,8 +42,9 @@ func main() {
 
 	redisPort := os.Getenv("REDISPORT")
 	redisPass := os.Getenv("REDISPASS")
+	redisAddr := os.Getenv("REDISADDR")
 
-	redisPort = ":" + redisPort
+	redisPort = redisAddr + ":" + redisPort
 
 	//opens a tcp connection on port 6369 to the redis-server (queue)
 	client, err := redis.Dial("tcp", redisPort)

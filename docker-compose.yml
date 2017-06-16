@@ -1,0 +1,37 @@
+version: "2.1"
+
+services:
+  delivery:
+    image: golang:latest
+    volumes:
+      - .:/go/src/miniproject
+    working_dir: /go/src/miniproject
+    command: go run delivery.go
+    links:
+      - redis
+    environment:
+      REDISPORT: 6369
+      REDISPASS: password
+      REDISADDR: redis
+
+  redis:
+    image: redis
+    command: redis-server --port 6369 --requirepass password
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - .:/go/src/miniproject
+      - ./site.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+
+  php:
+    build:
+      context: ./
+      dockerfile: Dockerfile-php-7.0
+    volumes:
+      - .:/go/src/miniproject
+    ports:
+      - "8180:80"
+      - "9000:9000"

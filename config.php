@@ -1,8 +1,9 @@
 <?php
 return  [
         'scheme' => 'tcp',
-        'host'   => '127.0.0.1',
-        'port'   => '<Your Redis Port>',
-        'password' => '<Your Redis Passowrd>'
+        'host' => 'redis',
+//      'host'   => '127.0.0.1',
+        'port'   => '6369',
+        'password' => 'password'
 ];
 ?>

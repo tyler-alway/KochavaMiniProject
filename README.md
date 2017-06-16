@@ -25,8 +25,8 @@ and
 
 Then run these commands:<br/>
 `export REDISPORT=<Your Redis Port>` <br/>
-`export REDISPASS=<Your Redis Password>`
-
+`export REDISPASS=<Your Redis Password>`<br/>
+`export REDISADDR=<Your Redis address>`
 
 ##### NGINX:
 Useful resource for installing and getting NGINX working with PHP:

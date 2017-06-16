@@ -1,0 +1,3 @@
+FROM php:7-fpm
+RUN pear channel-discover pear.nrk.io
+RUN pear install nrk/predis-1.1.1
