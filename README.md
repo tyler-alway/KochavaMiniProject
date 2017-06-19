@@ -78,7 +78,7 @@ Or to run go in the background
 Docker and docker-compose must be installed (and that is all, no need to install or follow any of the instructions above)
 
 To run use `docker-compose up` <br/>
-To run in the background use `docker-compose up -d` 
+To run in the background use `docker-compose up -d` <br/>
 To run tests use `docker-compose -f docker-compose.tests.yml up`
 
 
