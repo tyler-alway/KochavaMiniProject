@@ -29,7 +29,7 @@ services:
     ports:
       - "8080:80"
 
-  php:
+  ingest:
     build:
       context: ./
       dockerfile: Dockerfile-php-7.0
