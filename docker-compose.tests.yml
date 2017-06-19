@@ -1,0 +1,11 @@
+version: "2.1"
+
+services:
+  delivery:
+    build:
+      context: ./
+      dockerfile: Dockerfile-Go
+    volumes:
+      - .:/go/src/miniproject
+    working_dir: /go/src/miniproject
+    command: go test

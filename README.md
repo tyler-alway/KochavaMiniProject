@@ -70,6 +70,15 @@ Or to run go in the background
 1) `go build delivery.go`
 2) `./delivery &`
 
+
+## Docker
+- Docker must be installed
+- Currently Go must be installed (Working on fix this)
+- The go dependancies must be vendored (Working on fix this)
+
+To run use `docker-compose up`
+
+
 ##### Sample curls:
 
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://sample_domain_endpoint.com/data?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  http://localhost/ingest.php`

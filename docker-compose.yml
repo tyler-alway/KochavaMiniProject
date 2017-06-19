@@ -2,10 +2,13 @@ version: "2.1"
 
 services:
   delivery:
-    image: golang:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile-Go
     volumes:
       - .:/go/src/miniproject
     working_dir: /go/src/miniproject
+    command: go test
     command: go run delivery.go
     links:
       - redis
@@ -32,6 +35,3 @@ services:
       dockerfile: Dockerfile-php-7.0
     volumes:
       - .:/go/src/miniproject
-    ports:
-      - "8180:80"
-      - "9000:9000"
