@@ -32,8 +32,11 @@ Then run these commands:<br/>
 Useful resource for installing and getting NGINX working with PHP:
 https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-in-ubuntu-16-04
 
-Open the config.php file and replace `<Your Redis Port>` with your redis port
-and replace `<Your Redis Passowrd>` with your redis password
+Open the config.php file and make the following changes:
+- replace host line with the name of the host used
+- replace port with your port
+- replace password with your password
+
 
 Then move the PHP script and config to NGINX:  
 `cp ingest.php /var/www/html/ingest.php`<br/>
@@ -72,14 +75,15 @@ Or to run go in the background
 
 
 ## Docker
-- Docker must be installed
-- Currently Go must be installed (Working on fix this)
-- The go dependancies must be vendored (Working on fix this)
+Docker and docker-compose must be installed (and that is all, no need to install or follow any of the instructions above)
 
-To run use `docker-compose up`
+To run use `docker-compose up` <br/>
+To run tests use `docker-compose -f docker-compose.tests.yml up`
 
 
-##### Sample curls:
+
+## Sample curls:
+
 
 `$ curl -X POST -H "Content-Type: application/json" -d '{"endpoint":{"method":"GET","url":"http://sample_domain_endpoint.com/data?title={mascot}&image={location}&foo={bar}"},"data":[{"mascot":"Gopher","location":"https://blog.golang.org/gopher/gopher.png"}]}'  http://localhost/ingest.php`
 
