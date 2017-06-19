@@ -1,7 +1,7 @@
 version: "2.1"
 
 services:
-  delivery:
+  delivery-test:
     build:
       context: ./
       dockerfile: Dockerfile-Go
